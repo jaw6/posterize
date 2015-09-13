@@ -13,8 +13,7 @@ import (
   "net/http"
   "net/url"
   "os"
-  // "path/filepath"
-  // "strconv"
+  "regexp"
 )
 
 func getNameFromArgs() (name string, err error) {
@@ -24,6 +23,10 @@ func getNameFromArgs() (name string, err error) {
   }
 
   name = os.Args[1]
+
+  // oddly specific requirement: if name ends in " (2001)", remove that
+  r, _ := regexp.Compile(" ([[({]?\\d{4}.?)\\z")
+  name = r.ReplaceAllString(name, "")
   return
 }
 
@@ -105,7 +108,7 @@ func main() {
 
   poster := result.Poster
 
-  if filename != "" {
+  if poster != "" && filename != "" {
     err = urlToFile(poster, filename)
     if err != nil {
       fmt.Println(err)
