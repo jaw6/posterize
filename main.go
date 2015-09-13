@@ -2,11 +2,13 @@ package main
 
 // given name in input, return poster if one is found
 // in, eg http://www.imdbapi.com/?i=&t=inception
+// optional: given file name, save poster to file
 
 import (
   "encoding/json"
   "errors"
   "fmt"
+  "io"
   "io/ioutil"
   "net/http"
   "net/url"
@@ -15,13 +17,23 @@ import (
   // "strconv"
 )
 
-func getNameFromArgs() (name string, err error){
+func getNameFromArgs() (name string, err error) {
   if len(os.Args) < 2 {
     err := errors.New("must have a name to search for")
     return name, err
   }
 
-  name = os.Args[len(os.Args) - 1]
+  name = os.Args[1]
+  return
+}
+
+func getFileNameFromArgs() (filename string, err error) {
+  if len(os.Args) < 3 {
+    err := errors.New("no filename provided")
+    return filename, err
+  }
+
+  filename = os.Args[2]
   return
 }
 
@@ -55,8 +67,23 @@ func queryWithName(name string) (res result, err error) {
   return
 }
 
+func urlToFile(url string, file string) (err error) {
+  response, err := http.Get(url)
+  if err != nil { fmt.Printf("ERROR! %v\n", err) }
+  defer response.Body.Close()
+
+  target, err := os.Create(file)
+  if err != nil { fmt.Printf("ERROR! %v\n", err) }
+  defer target.Close()
+
+  _, err = io.Copy(target, response.Body)
+  if err != nil { fmt.Printf("Err! %v\n", err) }
+  return
+}
+
 func main() {
   name, err := getNameFromArgs()
+  filename, _ := getFileNameFromArgs()
 
   if err != nil {
     fmt.Println(err)
@@ -71,5 +98,11 @@ func main() {
   }
 
   poster := result.Poster
-  fmt.Println(poster)
+
+  if (filename != "") {
+    err = urlToFile(poster, filename)
+    if err != nil { fmt.Println(err); os.Exit(1) }
+  } else {
+    fmt.Println(poster)
+  }
 }
