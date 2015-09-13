@@ -40,7 +40,7 @@ func getFileNameFromArgs() (filename string, err error) {
 type result struct {
   Title  string `json:"Title"`
   Poster string `json:"Poster"`
-  Year   string  `json:"Year"`
+  Year   string `json:"Year"`
 }
 
 func queryWithName(name string) (res result, err error) {
@@ -69,15 +69,21 @@ func queryWithName(name string) (res result, err error) {
 
 func urlToFile(url string, file string) (err error) {
   response, err := http.Get(url)
-  if err != nil { fmt.Printf("ERROR! %v\n", err) }
+  if err != nil {
+    fmt.Printf("ERROR! %v\n", err)
+  }
   defer response.Body.Close()
 
   target, err := os.Create(file)
-  if err != nil { fmt.Printf("ERROR! %v\n", err) }
+  if err != nil {
+    fmt.Printf("ERROR! %v\n", err)
+  }
   defer target.Close()
 
   _, err = io.Copy(target, response.Body)
-  if err != nil { fmt.Printf("Err! %v\n", err) }
+  if err != nil {
+    fmt.Printf("Err! %v\n", err)
+  }
   return
 }
 
@@ -99,9 +105,12 @@ func main() {
 
   poster := result.Poster
 
-  if (filename != "") {
+  if filename != "" {
     err = urlToFile(poster, filename)
-    if err != nil { fmt.Println(err); os.Exit(1) }
+    if err != nil {
+      fmt.Println(err)
+      os.Exit(1)
+    }
   } else {
     fmt.Println(poster)
   }
