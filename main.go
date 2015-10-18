@@ -47,7 +47,7 @@ type result struct {
 }
 
 func queryWithName(name string) (res result, err error) {
-  u, err := url.Parse("http://www.imdbapi.com/")
+  u, err := url.Parse("http://www.omdbapi.com/")
   params := url.Values{}
   params.Add("t", name)
   params.Add("i", "")
